@@ -1,0 +1,18 @@
+---
+- name: Get VM Id
+  shell: "/bin/vim-cmd vmsvc/getallvms | /bin/grep ' {{ vm }} ' | /bin/awk '{print $1}' "
+  register: vm_id
+
+- assert:
+    that:
+      - vm_id.rc == 0
+      - vm_id.stdout != ""
+    fail_msg: "The variable vm_id was found to be empty.  Does the VM exist on the vSphere host?"
+    success_msg: "The variable vm_id was found with value {{ vm_id.stdout }}."
+
+- name: Remove all snapshots for {{ vm }}
+  shell: "/bin/vim-cmd vmsvc/snapshot.removeall {{ vm_id.stdout }}"
+  ignore_errors: yes
+
+- name: Create snapshot on {{ vm }}
+  shell: "/bin/vim-cmd vmsvc/snapshot.create {{ vm_id.stdout }} snap"

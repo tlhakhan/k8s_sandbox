@@ -1,0 +1,12 @@
+#!/usr/bin/ansible-playbook
+
+---
+- name: Reset the VMs to clean state
+  hosts: vs-2
+  gather_facts: no
+  tasks:
+    - name: Reset the VM to clean state
+      include_tasks: ./scripts/reset_vm.yml
+      loop: "{{ groups['k8s'] }}"
+      loop_control:
+        loop_var: vm

@@ -1,0 +1,22 @@
+---
+- name: Get VM Id
+  shell: "/bin/vim-cmd vmsvc/getallvms | /bin/grep ' {{ vm }} ' | /bin/awk '{print $1}' "
+  register: vm_id
+
+- assert:
+    that:
+      - vm_id.rc == 0
+      - vm_id.stdout != ""
+    fail_msg: "The variable vm_id was found to be empty.  Does the VM exist on the vSphere host?"
+    success_msg: "The variable vm_id was found with value {{ vm_id.stdout }}."
+
+- assert:
+    that:
+      - hostvars[vm]['clean_snap_id'] is defined
+      - hostvars[vm]['clean_snap_id'] != ""
+    fail_msg: "The variable clean_snap_id for {{ vm }} was found to be empty. Unable to revert VM to a known clean snapshot id."
+    success_msg: "The variable clean_snap_id for {{ vm }} was found with value {{ hostvars[vm]['clean_snap_id'] }}."
+
+- name: Revert snapshot to the {{ vm }} clean_snap_id
+  shell: "/bin/vim-cmd vmsvc/snapshot.revert {{ vm_id.stdout }} {{ hostvars[vm]['clean_snap_id'] }} 0"
+

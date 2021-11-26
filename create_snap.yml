@@ -1,0 +1,12 @@
+#!/usr/bin/ansible-playbook
+
+---
+- name: Initialize a new starting point snapshot
+  hosts: vs-2
+  gather_facts: no
+  tasks:
+    - name: Initialize a new starting point snapshot for VM
+      include_tasks: ./scripts/create_snap_vm.yml
+      loop: "{{ groups['k8s'] }}"
+      loop_control:
+        loop_var: vm
