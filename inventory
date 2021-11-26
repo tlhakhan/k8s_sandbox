@@ -2,7 +2,18 @@
 vs-2 ansible_python_interpreter=/bin/python
 
 [k8s]
-kube-20 clean_snap_id=1
-kube-21 clean_snap_id=1
-kube-22 clean_snap_id=1
-kube-23 clean_snap_id=1
+
+[k8s:children]
+control_plane
+worker_nodes
+
+[k8s:vars]
+clean_snap_id=1
+
+[control_plane]
+kube-20
+
+[worker_nodes]
+kube-21
+kube-22
+kube-23
