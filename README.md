@@ -1,4 +1,4 @@
-#README
+# README
 This repository holds scripts to help with Kubernetes deployment and testing in my homelab.
 
 | playbooks | description
