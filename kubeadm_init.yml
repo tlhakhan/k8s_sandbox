@@ -1,0 +1,21 @@
+---
+- name: Setup kubeadm init
+  hosts: control_plane
+  gather_facts: no
+
+  vars:
+    pod_network_cidr: 10.10.0.0/16
+
+  tasks: 
+    - name: Init kubeadm
+      shell: "kubeadm init --cri-socket=/var/run/containerd/containerd.sock --pod-network-cidr={{ pod_network_cidr }}"
+      register: kubeadm_output
+
+    - assert: 
+        that:
+          - kubeadm_output.rc == 0
+        success_msg: "Successful kubeadm init"
+        fail_msg: "Something went wrong with kubeadm init"
+
+    - debug:
+        msg: '{{ kubeadm_output.stdout }}'
